@@ -9,6 +9,23 @@
             background-color: #cce5ff; /* light blue */
             font-family: Arial, sans-serif;
         }
+
+        .game-box {
+            background-color: white;
+            border: 2px solid black;
+            padding: 20px;
+            width: 320px;
+            margin-top: 20px;
+        }
+
+        .code-box {
+            background-color: #f8f9fa;
+            border: 1px solid #333;
+            padding: 15px;
+            width: 80%;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -16,9 +33,59 @@
     <h1>What I Learned (Page 1)</h1>
 
     <p>
-        On this page, I can write about a topic I learned in computer science.
-        For example: HTML basics, variables, loops, or algorithms.
+        This page shows a game I created using JavaScript.
+        JavaScript lets games run directly in a web browser.
     </p>
+
+    <!-- PLAYABLE GAME AREA -->
+    <h2>Playable Game</h2>
+
+    <div class="game-box">
+        <p>Guess a number between 1 and 10:</p>
+
+        <input type="number" id="guessInput">
+        <button onclick="checkGuess()">Guess</button>
+
+        <p id="result"></p>
+    </div>
+
+    <!-- JAVASCRIPT CODE DISPLAY AREA -->
+    <h2>My JavaScript Game Code</h2>
+
+    <div class="code-box">
+        <pre><code>
+// You can paste or edit your JavaScript game code here
+
+let secretNumber = Math.floor(Math.random() * 10) + 1;
+
+function checkGuess() {
+    let guess = document.getElementById("guessInput").value;
+    let result = document.getElementById("result");
+
+    if (guess == secretNumber) {
+        result.textContent = "Correct! You guessed the number!";
+    } else {
+        result.textContent = "Wrong guess. Try again!";
+    }
+}
+        </code></pre>
+    </div>
+
+    <!-- ACTUAL JAVASCRIPT THAT RUNS THE GAME -->
+    <script>
+        let secretNumber = Math.floor(Math.random() * 10) + 1;
+
+        function checkGuess() {
+            let guess = document.getElementById("guessInput").value;
+            let result = document.getElementById("result");
+
+            if (guess == secretNumber) {
+                result.textContent = "Correct! You guessed the number!";
+            } else {
+                result.textContent = "Wrong guess. Try again!";
+            }
+        }
+    </script>
 
     <h2>Navigation</h2>
     <ul>
