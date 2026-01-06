@@ -2,96 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>What I Learned - Page 1</title>
-
+    <title>JavaScript Game</title>
     <style>
         body {
-            background-color: #cce5ff; /* light blue */
-            font-family: Arial, sans-serif;
+            background-color: #cce5ff;
+            margin: 0;
+            overflow: hidden;
         }
-
-        .game-box {
-            background-color: blue;
-            border: 2px solid black;
-            padding: 20px;
-            width: 320px;
-            margin-top: 20px;
-        }
-
-        .code-box {
-            background-color: #f8f9fa;
-            border: 1px solid #333;
-            padding: 15px;
-            width: 80%;
-            margin-top: 20px;
-            overflow-x: auto;
+        canvas {
+            display: block;
+            background-color: black;
         }
     </style>
 </head>
 <body>
 
-    <h1>What I Learned (Page 1)</h1>
+<canvas id="gameCanvas" width="1000" height="800"></canvas>
 
-    <p>
-        This page shows a game I created using JavaScript.
-        JavaScript lets games run directly in a web browser.
-    </p>
+<script>
+/* ================= VARIABLES ================= */
 
-    <!-- PLAYABLE GAME AREA -->
-    <h2>Playable Game</h2>
+let where = 0;
+let camSensitivity = 2;
 
-    <div class="game-box">
-        <p>Guess a number between 1 and 10:</p>
+let playerPos = [1, 0, 0];
 
-        <input type="number" id="guessInput">
-        <button onclick="checkGuess()">Guess</button>
+// Load image
+let godImage = new Image();
+godImage.src = "OGOD.png"; // must be in same folder
 
-        <p id="result"></p>
-    </div>
+let god = [10, 0, 0, godImage];
+let everything = [god];
 
-    <!-- JAVASCRIPT CODE DISPLAY AREA -->
-    <h2>My JavaScript Game Code</h2>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-    <div class="code-box">
-        <pre><code>
-// You can paste or edit your JavaScript game code here
+let keys = {};
 
-let secretNumber = Math.floor(Math.random() * 10) + 1;
+/* ================= INPUT ================= */
 
-function checkGuess() {
-    let guess = document.getElementById("guessInput").value;
-    let result = document.getElementById("result");
+document.addEventListener("keydown", e => {
+    keys[e.key] = true;
+});
 
-    if (guess == secretNumber) {
-        result.textContent = "Correct! You guessed the number!";
-    } else {
-        result.textContent = "Wrong guess. Try again!";
+document.addEventListener("keyup", e => {
+    keys[e.key] = false;
+});
+
+/* ================= FUNCTIONS ================= */
+
+function look() {
+    if (keys["ArrowLeft"]) {
+        where -= camSensitivity;
+    }
+    if (keys["ArrowRight"]) {
+        where += camSensitivity;
+    }
+
+    where = (where + 180) % 360 - 180;
+
+    let angleRad = where * Math.PI / 180;
+    let moveX = Math.cos(angleRad);
+    let moveZ = Math.sin(angleRad);
+
+    if (keys["ArrowUp"]) {
+        playerPos[0] += moveX;
+        playerPos[2] += moveZ;
+    }
+    if (keys["ArrowDown"]) {
+        playerPos[0] -= moveX;
+        playerPos[2] -= moveZ;
     }
 }
-        </code></pre>
-    </div>
 
-    <!-- ACTUAL JAVASCRIPT THAT RUNS THE GAME -->
-    <script>
-        let secretNumber = Math.floor(Math.random() * 10) + 1;
+function render() {
+    for (let entity of everything) {
+        let dx = entity[0] - playerPos[0];
+        let dz = entity[2] - playerPos[2];
 
-        function checkGuess() {
-            let guess = document.getElementById("guessInput").value;
-            let result = document.getElementById("result");
+        let distance = Math.sqrt(dx * dx + dz * dz);
+        if (distance <= 0.01) continue;
 
-            if (guess == secretNumber) {
-                result.textContent = "Correct! You guessed the number!";
-            } else {
-                result.textContent = "Wrong guess. Try again!";
-            }
-        }
-    </script>
+        let angle = Math.atan2(dz, dx) * 180 / Math.PI;
+        let relative = angle - where;
+        relative = (relative + 180) % 360 - 180;
 
-    <h2>Navigation</h2>
-    <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="page2.html">Go to Page 2</a></li>
-    </ul>
+        let FOV = 90;
+        if (Math.abs(relative) > FOV / 2) continue;
+
+        let screenX = (relative / (FOV / 2)) * 500 + canvas.width / 2;
+        let size = 600 / distance;
+
+        ctx.drawImage(
+            entity[3],
+            screenX - size / 2,
+            canvas.height / 2 - size / 2,
+            size,
+            size
+        );
+    }
+}
+
+/* ================= GAME LOOP ================= */
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    look();
+    render();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
