@@ -34,7 +34,7 @@
 </head>
 <body>
 
-    <!-- NAVIGATION TEXT -->
+    <!-- NAVIGATION -->
     <div class="nav">
         <a href="index.html">Home</a>
         <a href="page1.html">Game Page</a>
@@ -51,30 +51,67 @@
     <canvas id="gameCanvas" width="1000" height="800"></canvas>
 
     <script>
+        /* ===============================
+           PLAYER + CAMERA VARIABLES
+        =============================== */
         let where = 0;
         let camSensitivity = 2;
-
         let playerPos = [1, 0, 0];
 
+        /* ===============================
+           ENTITY SETUP
+        =============================== */
         let godImage = new Image();
         godImage.src = "OGOD.png";
 
         let god = [10, 0, 0, godImage];
         let everything = [god];
 
+        /* ===============================
+           CANVAS SETUP
+        =============================== */
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
+        /* ===============================
+           INPUT HANDLING
+        =============================== */
         let keys = {};
 
         document.addEventListener("keydown", e => {
             keys[e.key] = true;
+
+            // SPACEBAR SPAWNS IMAGE
+            if (e.code === "Space") {
+                spawnRandomImage();
+            }
         });
 
         document.addEventListener("keyup", e => {
             keys[e.key] = false;
         });
 
+        /* ===============================
+           SPAWNED IMAGES
+        =============================== */
+        let spawnedImages = [];
+
+        let spawnImage = new Image();
+        spawnImage.src = "OGOD.png"; // change if you want
+
+        function spawnRandomImage() {
+            let randomX = Math.floor(Math.random() * 100) + 1;
+            let randomY = Math.floor(Math.random() * 100) + 1;
+
+            spawnedImages.push({
+                x: randomX * 8, // scale to canvas width
+                y: randomY * 6  // scale to canvas height
+            });
+        }
+
+        /* ===============================
+           PLAYER MOVEMENT / CAMERA
+        =============================== */
         function look() {
             if (keys["ArrowLeft"]) where -= camSensitivity;
             if (keys["ArrowRight"]) where += camSensitivity;
@@ -95,7 +132,16 @@
             }
         }
 
+        /* ===============================
+           RENDERING
+        =============================== */
         function render() {
+            // Draw spawned images
+            for (let img of spawnedImages) {
+                ctx.drawImage(spawnImage, img.x, img.y, 50, 50);
+            }
+
+            // Draw 3D-style entities
             for (let entity of everything) {
                 let dx = entity[0] - playerPos[0];
                 let dz = entity[2] - playerPos[2];
@@ -123,6 +169,9 @@
             }
         }
 
+        /* ===============================
+           GAME LOOP
+        =============================== */
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             look();
@@ -133,7 +182,7 @@
         gameLoop();
     </script>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- BOTTOM NAV -->
     <div class="nav">
         <a href="index.html">Home</a>
         <a href="page1.html">Game Page</a>
